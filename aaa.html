@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>sci Quiz</title>
+<style>
+ 
+ .quiz-container {
+    max-width: 600px;
+    margin: 50px auto;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+}   body {
+    background-image: url('image.jpg');
+    background-repeat: no-repeat;
+    background-size: 1536px 695px;
+background-position: cover;
+    font-family: Arial, sans-serif;
+}
+.content {
+        position: absolute; 
+        bottom: 20px; 
+        left: 20px; 
+        color: white;
+}
+
+
+.question {
+    font-size: 32px;
+    margin-top: 90px;
+    text-align: center;
+    color:#f0f0f0;
+}
+
+.options {
+    display: flex;
+    position: absolute;
+    flex-direction: column;
+    align-items: center;
+    width: 100px;
+    height: 50px;
+    left: 700px;
+}
+
+.option {
+    width: 100px;
+    height: 50px;
+    margin: 10px 0;
+    padding: 15px 30px;
+    background-color: #040404;
+            border: 3px solid  rgba(255, 42, 0, 0.916);  
+  box-shadow: 0 0 4px 2px   rgba(255, 42, 0, 0.916);   
+  opacity: 1; 
+  color:  #f0e7e6;  
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+   
+}
+
+.option:hover{
+  opacity: 0.3;  /* Reveal the neon glow on hover */
+}
+
+.result {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+#score {
+    font-size: 24px;
+    font-weight: bold;
+    margin-top: 150px;
+    margin-left: 500px;
+    color: green;
+}
+
+.celebration-popup h2 {
+    font-size: 24px;
+    color: green;
+    margin-bottom: 10px;
+}
+
+.celebration-popup p {
+    font-size: 18px;
+}
+#nextlevel {
+  background-color: rgb(15, 14, 15); 
+  border: 1px solid #d0c2cc; 
+  color: #fff; 
+  padding: 10px 20px; 
+  font-size: 18px; 
+  font-weight: bold; 
+  text-transform: uppercase; 
+  border-radius: 8px; 
+  cursor: pointer; 
+  transition: background-color 0.3s, color 0.3s; 
+}
+
+#nextlevel:hover {
+  background-color:rgb(19, 18, 19); 
+  color: #fff;
+}
+.celebration-popup {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    z-index: 9999;
+}
+
+/* On focus, remove outline */
+#nextlevel:focus {
+  outline: none;
+}
+
+/* Add some animation */
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+
+#nextlevel:hover {
+  animation: pulse 0.5s infinite alternate; /* Pulse animation on hover */
+}
+#restartButton {
+    background-color: #ff0000;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    position: absolute; /* Position absolutely */
+    top: 400px; /* Adjust top position */
+    left: 350px; /* Adjust right position */
+    background-color: #040404;
+            border: 3px solid  rgba(255, 38, 4, 0.96);  
+  box-shadow: 0 0 8px 4px  rgba(255, 68, 0, 0.8);  
+  opacity: 1; 
+ 
+  }
+
+  #restartButton:hover {
+    background-color: #d60000;
+    opacity: 0.5x;
+  }
+
+
+
+</style>
+</head>
+<body>
+ 
+    <div id="celebrationPopup" class="celebration-popup">
+        <h2>Congratulations!</h2>
+        <p>You got a perfect score!</p>
+        <div>
+            <button id="nextlevel" onclick="redirectAndUnlock()">Next Level</button>
+        </div>
+</div>
+
+<div class="quiz-container">
+    <div class="question" id="question"></div>
+    <div class="options" id="options"></div>
+    <div class="result" id="result"></div>
+    <button onclick="showScore()" id="scoreButton" style="display:none;">Show Score</button>
+    <div id="score" style="display:none;"></div>
+    <button onclick="restartQuiz()" id="restartButton" style="display:none;">Restart Quiz</button>
+</div>
+
+<script>
+    const allQuestions = [
+    { question: "What is the chemical symbol for water?", options: ["W", "H2O", "O2", "CO2"], answer: 1 },
+{ question: "What is the atomic number of carbon?", options: ["4", "6", "8", "12"], answer: 1 },
+{ question: "Which gas do plants primarily use during photosynthesis?", options: ["Oxygen", "Carbon Dioxide", "Nitrogen", "Hydrogen"], answer: 1 },
+{ question: "What is the SI unit of electric current?", options: ["Ampere", "Volt", "Ohm", "Watt"], answer: 0 },
+{ question: "Which planet is known as the 'Red Planet'?", options: ["Mercury", "Venus", "Mars", "Jupiter"], answer: 2 },
+{ question: "What is the process by which plants make their own food?", options: ["Respiration", "Transpiration", "Photosynthesis", "Pollination"], answer: 2 },
+{ question: "What is the hardest natural substance on Earth?", options: ["Gold", "Diamond", "Iron", "Quartz"], answer: 1 },
+{ question: "Which of the following is not a type of electromagnetic radiation?", options: ["Gamma rays", "X-rays", "Sound waves", "Ultraviolet rays"], answer: 2 },
+{ question: "What is the chemical formula for table salt?", options: ["NaCl", "H2O", "CO2", "CH4"], answer: 0 },
+{ question: "What is the speed of light in a vacuum?", options: ["300,000 km/s", "150,000 km/s", "600,000 km/s", "900,000 km/s"], answer: 0 },
+{ question: "What is the primary function of the human kidney?", options: ["Digestion", "Respiration", "Filtration of blood", "Circulation"], answer: 2 },
+{ question: "Which of the following is a greenhouse gas?", options: ["Nitrogen", "Oxygen", "Carbon Dioxide", "Argon"], answer: 2 },
+{ question: "What is the chemical symbol for gold?", options: ["G", "Au", "Ag", "Ge"], answer: 1 },
+{ question: "What is the pH of pure water?", options: ["5", "6", "7", "8"], answer: 2 },
+{ question: "Which of the following is a renewable energy source?", options: ["Coal", "Natural Gas", "Solar Power", "Nuclear Power"], answer: 2 },
+{ question: "What is the process by which an organism develops from a fertilized egg?", options: ["Osmosis", "Metabolism", "Fertilization", "Embryogenesis"], answer: 3 },
+{ question: "What is the chemical symbol for oxygen?", options: ["O", "O2", "O3", "CO2"], answer: 0 },
+{ question: "What is the freezing point of water in Celsius?", options: ["0°C", "100°C", "-273°C", "-100°C"], answer: 0 },
+{ question: "Which of the following is not a type of rock?", options: ["Sedimentary", "Igneous", "Metamorphic", "Metallic"], answer: 3 },
+{ question: "What is the unit of measurement for force?", options: ["Joule", "Watt", "Newton", "Pascal"], answer: 2 },
+{ question: "What is the powerhouse of the cell?", options: ["Ribosome", "Nucleus", "Mitochondria", "Lysosome"], answer: 2 },
+{ question: "Which planet is the largest in our solar system?", options: ["Venus", "Mars", "Earth", "Jupiter"], answer: 3 },
+{ question: "What is the chemical symbol for iron?", options: ["Fe", "Ir", "In", "Au"], answer: 0 },
+{ question: "What is the main component of the Earth's atmosphere?", options: ["Nitrogen", "Oxygen", "Carbon Dioxide", "Hydrogen"], answer: 0 },
+{ question: "Which of the following is not a primary color of light?", options: ["Red", "Green", "Blue", "Yellow"], answer: 3 },
+{ question: "What is the largest organ in the human body?", options: ["Brain", "Liver", "Skin", "Heart"], answer: 2 },
+{ question: "What is the chemical symbol for sodium?", options: ["S", "Na", "So", "No"], answer: 1 },
+    ];
+
+    let currentQuestion = 0;
+    let score = 0;
+
+    function loadQuestion() {
+        const question = allQuestions[currentQuestion];
+        document.getElementById('question').innerText = question.question;
+
+        const optionsContainer = document.getElementById('options');
+        optionsContainer.innerHTML = '';
+        question.options.forEach((option, index) => {
+            const optionElement = document.createElement('div');
+            optionElement.classList.add('option');
+            optionElement.innerText = option;
+            optionElement.onclick = () => checkAnswer(index);
+            optionsContainer.appendChild(optionElement);
+        });
+    }
+
+    function checkAnswer(selectedOption) {
+        const question = allQuestions[currentQuestion];
+        if (selectedOption === question.answer) {
+            document.getElementById('result').innerText = "Correct!";
+            document.getElementById('result').style.color = "#ffffff";
+            document.getElementById('result').style.position = "absolute"; // Set position to absolute
+document.getElementById('result').style.top = "50%"; // Position from the top
+document.getElementById('result').style.left = "30%"; // Position from the left
+document.getElementById('result').style.transform = "translate(-50%, -50%)"; // Center the text horizontally and vertically
+            if(score<10)
+            score++;
+            currentQuestion++;
+            if (currentQuestion < 10) {
+                loadQuestion();
+            } else {
+                showScore();
+            }
+        } else {
+            document.getElementById('result').innerText = "Incorrect! Restart the quiz.";
+            document.getElementById('result').style.color = "#ffffff";
+            document.getElementById('result').style.position = "absolute"; 
+document.getElementById('result').style.top = "50%"; 
+document.getElementById('result').style.left = "30%"; 
+document.getElementById('result').style.transform = "translate(-50%, -50%)";
+            document.getElementById('restartButton').style.display = "block";
+            
+        }
+    }
+
+    function showScore() {
+        document.getElementById('scoreButton').style.display = "none";
+        document.getElementById('restartButton').style.display = "none";
+        document.getElementById('score').style.display = "block";
+        document.getElementById('score').innerText = "Your Score: " + score + "/10";
+        document.getElementById('options').style.display = "none";
+        document.getElementById('question').style.display = "none";
+
+       if(score==10)
+       {
+        document.getElementById('celebrationPopup').style.display = "block";
+       }
+    }
+    function redirectAndUnlock() {
+        window.history.pushState(null, null, window.location.href);
+  window.onpopstate = function () {
+    window.history.go(1);
+  };
+    window.location.href = "geme22.html";
+    localStorage.setItem('unlockedLevel', 'level2');
+}
+
+
+    function restartQuiz() {
+        currentQuestion = 0;
+        score = 0;
+        document.getElementById('score').style.display = "none";
+        document.getElementById('restartButton').style.display = "none";
+        document.getElementById('result').innerText = "";
+        loadQuestion();
+    }
+
+    // Shuffle questions before starting the quiz
+    allQuestions.sort(() => Math.random() - 0.5);
+
+    // Load the first question when the page loads
+    loadQuestion();
+</script>
+
+</body>
+</html>

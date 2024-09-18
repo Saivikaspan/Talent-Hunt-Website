@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>English Quiz</title>
+<style>
+    body {
+        background-color: #e9d2d2;
+        background-image: url('eb.jpg'); /* Set background color */
+        font-family: 'Arial', sans-serif;
+        text-align: center;
+        background-size: cover;
+        margin: 0; /* Remove default margin */
+        padding: 0; /* Remove default padding */
+        background-repeat: no-repeat;
+        
+    }
+
+    .quiz-container {
+    width: 600px; /* Set a fixed width */
+    margin: 50px auto;
+    font-family: 'Times New Roman', Times, serif;
+    font-size: x-large;
+    background-color: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    color: #bc1313;
+    transition: transform 0.5s;
+}
+.quiz-container:hover
+{
+    color:black;
+    transform: translateY(-20px);
+}
+
+    .image-container {
+        width: 300px;
+        height: 200px;
+        margin: 0 auto 20px auto; /* Center the image container and add margin below */
+        overflow: hidden; /* Hide overflow */
+        border-radius: 10px;
+    }
+    .image-container img {
+        width: 100%; /* Make the image fill the container */
+        height: auto; /* Maintain aspect ratio */
+    }
+    .options {
+        margin-top: 20px;
+    }
+    .option {
+        display: inline-block;
+        margin: 0 10px;
+        padding: 10px;
+        font-size: large;
+        background-color: #f0f0f0;
+        border-radius: 5px;
+        cursor: not-allowed;
+        pointer-events: none;
+    }
+    .option:hover {
+        background-color: #e0e0e0;
+    }
+    .result {
+        font-size: 20px;
+        font-weight: bold;
+        margin-bottom: 20px;
+    }
+    #score {
+        font-size: 24px;
+        font-weight: bold;
+        margin-top: 20px;
+    }
+    .answer-input {
+    margin-top: 20px;
+    width: 100%;
+    font-size: large;
+    max-width: 300px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+    display: block;
+    margin: 20px auto; /* Center the input box horizontally */
+}
+
+    .submit-button {
+        margin-top: 20px;
+        padding: 10px 20px;
+        background-color: #0e0f0e;
+        color: white;
+        border: none;
+        font-size: large;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+    .submit-button:hover {
+        background-color: #45a049;
+        transition: 1s;
+    }
+    .celebration-popup h2 {
+    font-size: 24px;
+    color: green;
+    margin-bottom: 10px;
+}
+
+.celebration-popup p {
+    font-size: 18px;
+}
+#nextlevel {
+  background-color: rgb(15, 14, 15); 
+  border: 1px solid #d0c2cc; 
+  color: #fff; 
+  padding: 10px 20px; 
+  font-size: 18px; 
+  font-weight: bold; 
+  text-transform: uppercase; 
+  border-radius: 8px; 
+  cursor: pointer; 
+  transition: background-color 0.3s, color 0.3s; 
+}
+
+#nextlevel:hover {
+  background-color:rgb(19, 18, 19); 
+  color: #fff;
+}
+.celebration-popup {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    z-index: 9999;
+}
+
+/* On focus, remove outline */
+#nextlevel:focus {
+  outline: none;
+}
+
+/* Add some animation */
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+
+#nextlevel:hover {
+  animation: pulse 0.5s infinite alternate; /* Pulse animation on hover */
+}
+</style>
+</head>
+<body>
+
+<div id="celebrationPopup" class="celebration-popup">
+    <h2>Congratulations!</h2>
+    <p>You got a perfect score!</p>
+    <div>
+        <button id="nextlevel" onclick="redirectAndUnlock()">Next Level</button>
+    </div>
+</div>
+
+<div class="quiz-container">
+    <div class="image-container">
+        <img src="ques.jpg" alt="Image">
+    </div>
+    <div class="question" id="question"></div>
+    <div class="options" id="options"></div>
+    <input type="text" id="answerInput" class="answer-input" placeholder="Type your answer here">
+    <div class="result" id="result"></div>
+    <button onclick="checkAnswer()" class="submit-button">Submit Answer</button>
+    <button onclick="showScore()" id="scoreButton" style="display:none;">Show Score</button>
+    <div id="score" style="display:none;"></div>
+    <button onclick="restartQuiz()" id="restartButton" style="display:none;">Restart Quiz</button>
+</div>
+
+<script>
+    const allQuestions = [
+        { 
+            "question": "There is a Word in the English Language in Which the First two Letters Signify a Male,the First three letters signify a female,the first four signify a great man, and the whole wod, a great woman. what is the word)",
+            
+            "answer": "heroine"
+        }
+    ];
+
+    let currentQuestion = 0;
+    let score = 0;
+
+    function loadQuestion() {
+        const question = allQuestions[currentQuestion];
+        document.getElementById('question').innerText = question.question;
+
+        const optionsContainer = document.getElementById('options');
+        optionsContainer.innerHTML = '';
+        question.options.forEach((option, index) => {
+            const optionElement = document.createElement('div');
+            optionElement.classList.add('option');
+            optionElement.innerText = option;
+            optionsContainer.appendChild(optionElement);
+        });
+    }
+    function redirectAndUnlock() {
+        window.history.pushState(null, null, window.location.href);
+  window.onpopstate = function () {
+    window.history.go(1);
+  };
+    window.location.href = "geme23.html";
+    localStorage.setItem('unlockedLevel', 'level2');
+}
+
+    function checkAnswer() {
+        const question = allQuestions[currentQuestion];
+        const userAnswer = document.getElementById('answerInput').value.trim().toLowerCase();
+        if (userAnswer === question.answer) {
+            document.getElementById('result').innerText = "Correct!";
+            score++;
+            currentQuestion++;
+            if (currentQuestion < allQuestions.length) {
+                loadQuestion();
+                document.getElementById('answerInput').value = ""; // Clear input field
+                document.getElementById('result').innerText = ""; // Clear result message
+            } else {
+                showScore();
+            }
+        } else {
+            document.getElementById('result').innerText = "Incorrect! Restart the quiz.";
+            document.getElementById('restartButton').style.display = "block";
+        }
+    }
+
+    function showScore() {
+        document.getElementById('restartButton').style.display = "none";
+        document.getElementById('score').style.display = "block";
+        document.getElementById('score').innerText = "Your Score: " + score + "/" + allQuestions.length;
+        document.getElementById('answerInput').style.display = "none";
+        document.getElementById('question').style.display = "none";
+
+        if (score === allQuestions.length) {
+            document.getElementById('celebrationPopup').style.display = "block";
+        }
+    }
+
+    function restartQuiz() {
+    currentQuestion = 0;
+    score = 0;
+    document.getElementById('score').style.display = "none";
+    document.getElementById('restartButton').style.display = "none";
+    document.getElementById('answerInput').value = ""; // Reset input field
+    document.getElementById('result').innerText = ""; // Clear result message
+    loadQuestion();
+}
+
+
+
+    // Shuffle questions before starting the quiz
+    allQuestions.sort(() => Math.random() - 0.5);
+
+    // Load the first question when the page loads
+    loadQuestion();
+</script>
+
+</body>
+</html>
+

@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Math Quiz</title>
+<style>
+  .quiz-container {
+    max-width: 600px;
+    margin: 50px auto;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+}   body {
+    background-image: url('image.jpg');
+    background-repeat: no-repeat;
+    background-size: 1536px 695px;
+background-position: cover;
+    font-family: Arial, sans-serif;
+}
+.content {
+        position: absolute; 
+        bottom: 20px; 
+        left: 20px; 
+        color: white;
+}
+
+
+.question {
+    font-size: 32px;
+    margin-top: 90px;
+    text-align: center;
+    color:#f0f0f0;
+}
+
+.options {
+    display: flex;
+    position: absolute;
+    flex-direction: column;
+    align-items: center;
+    width: 100px;
+    height: 50px;
+    left: 700px;
+}
+
+.option {
+    width: 100px;
+    height: 50px;
+    margin: 10px 0;
+    padding: 15px 30px;
+    background-color: #040404;
+            border: 3px solid  rgba(255, 42, 0, 0.916);  
+  box-shadow: 0 0 4px 2px   rgba(255, 42, 0, 0.916);   
+  opacity: 1; 
+  color:  #f0e7e6;  
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+   
+}
+
+.option:hover{
+  opacity: 0.3;  /* Reveal the neon glow on hover */
+}
+
+.result {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+#score {
+    font-size: 24px;
+    font-weight: bold;
+    margin-top: 150px;
+    margin-left: 500px;
+    color: green;
+}
+
+.celebration-popup h2 {
+    font-size: 24px;
+    color: green;
+    margin-bottom: 10px;
+}
+
+.celebration-popup p {
+    font-size: 18px;
+}
+#nextlevel {
+  background-color: rgb(15, 14, 15); 
+  border: 1px solid #d0c2cc; 
+  color: #fff; 
+  padding: 10px 20px; 
+  font-size: 18px; 
+  font-weight: bold; 
+  text-transform: uppercase; 
+  border-radius: 8px; 
+  cursor: pointer; 
+  transition: background-color 0.3s, color 0.3s; 
+}
+
+#nextlevel:hover {
+  background-color:rgb(19, 18, 19); 
+  color: #fff;
+}
+.celebration-popup {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    z-index: 9999;
+}
+
+/* On focus, remove outline */
+#nextlevel:focus {
+  outline: none;
+}
+
+/* Add some animation */
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+
+#nextlevel:hover {
+  animation: pulse 0.5s infinite alternate; /* Pulse animation on hover */
+}
+#restartButton {
+    background-color: #ff0000;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    position: absolute; /* Position absolutely */
+    top: 400px; /* Adjust top position */
+    left: 350px; /* Adjust right position */
+    background-color: #040404;
+            border: 3px solid  rgba(255, 38, 4, 0.96);  
+  box-shadow: 0 0 8px 4px  rgba(255, 68, 0, 0.8);  
+  opacity: 1; 
+ 
+  }
+
+  #restartButton:hover {
+    background-color: #d60000;
+    opacity: 0.5x;
+  }
+
+</style>
+</head>
+<body>
+    <div id="celebrationPopup" class="celebration-popup">
+        <h2>Congratulations!</h2>
+        <p>You got a perfect score!</p>
+        <div>
+            <button id="nextlevel" onclick="redirectAndUnlock()">Next Level</button>
+        </div>
+</div>
+<div class="quiz-container">
+    <div class="question" id="question"></div>
+    <div class="options" id="options"></div>
+    <div class="result" id="result"></div>
+    <button onclick="showScore()" id="scoreButton" style="display:none;">Show Score</button>
+    <div id="score" style="display:none;"></div>
+    <button onclick="restartQuiz()" id="restartButton" style="display:none;">Restart Quiz</button>
+</div>
+
+<script>
+    const allQuestions = [
+    { question: "What is the value of π (pi)?", options: ["3", "3.14", "3.1416", "3.14159"], answer: 1 },
+    { question: "What is the square root of 144?", options: ["11", "12", "13", "14"], answer: 1 },
+    { question: "If a right triangle has sides of lengths 3 and 4 units, what is the length of the hypotenuse?", options: ["5", "6", "7", "8"], answer: 0 },
+    { question: "What is the area of a circle with radius 5 units?", options: ["25π", "25", "50π", "50"], answer: 0 },
+    { question: "Solve for x: 2x + 5 = 15", options: ["5", "10", "15", "20"], answer: 0 },
+    { question: "What is the derivative of f(x) = 3x^2 with respect to x?", options: ["2x", "6x", "3x", "6"], answer: 2 },
+    { question: "What is the derivative of f(x) = 3x^2 with respect to x?", options: ["2x", "6x", "3x", "6"], answer: 2 },
+    { question: "If a = 4 and b = 3, what is the value of √(a^2 + b^2)?", options: ["5", "6", "7", "8"], answer: 0 },
+    { question: "What is the value of log₂(8)?", options: ["2", "3", "4", "5"], answer: 1 },
+    { question: "Solve for x: 3x - 7 = 34", options: ["3", "7", "8", "9"], answer: 3 },
+    { question: "What is the solution to the equation 2cos(x) = 1?", options: ["π/3", "π/6", "π/4", "π/2"], answer: 0 },
+    { question: "If a car travels at a speed of 60 miles per hour, how far will it travel in 3 hours?", options: ["120 miles", "150 miles", "180 miles", "200 miles"], answer: 2 },
+    { question: "What is the value of tan(π/4)?", options: ["0", "1", "-1", "Undefined"], answer: 1 },
+    { question: "Solve for x: 2x² - 5x + 2 = 0", options: ["-1/2 or 2", "-2 or 1/2", "1/2 or 2", "-2 or -1/2"], answer: 2 },
+    { question: "What is the value of sin(0)?", options: ["0", "1", "-1", "Undefined"], answer: 0 },
+    { question: "If a = 2, b = 3, and c = 4, what is the perimeter of the triangle?", options: ["9", "10", "11", "12"], answer: 0 },
+    { question: "What is the value of 2^3 * 3^2?", options: ["108", "54", "72", "216"], answer: 2 },
+    { question: "If a wheel has a diameter of 20 inches, what is its circumference?", options: ["20π inches", "40π inches", "80 inches", "100π inches"], answer: 0 },
+    { question: "What is the value of ∫(3x^2 + 2) dx from 0 to 1?", options: ["2", "3", "4", "5"], answer: 1 },
+    { question: "If a rectangle has length 8 units and width 5 units, what is its area?", options: ["40 square units", "45 square units", "48 square units", "50 square units"], answer: 0 },
+    { question: "What is the value of log₁₀(100)?", options: ["1", "2", "10", "100"], answer: 1 },
+    { question: "Solve for x: 4x + 7 = 3x - 2", options: ["-9", "-5", "3", "9"], answer: 0 },
+    { question: "If y = 2x + 3, what is y when x = 5?", options: ["8", "10", "13", "15"], answer: 2 },
+    { question: "What is the value of 5! (5 factorial)?", options: ["20", "60", "120", "720"], answer: 2 },
+    { question: "If a line has slope 2 and passes through the point (3, 4), what is the equation of the line?", options: ["y = 2x + 4", "y = 2x - 2", "y = 2x - 4", "y = x - 4"], answer: 1 },
+    { question: "What is the value of sin(π/2)?", options: ["0", "1", "-1", "Undefined"], answer: 1 },
+    { question: "If f(x) = x² - 4x + 4, what is the vertex of the parabola?", options: ["(1, 1)", "(2, 0)", "(2, 4)", "(4, 2)"], answer: 1 },
+    ];
+
+    let currentQuestion = 0;
+    let score = 0;
+
+    function loadQuestion() {
+        const question = allQuestions[currentQuestion];
+        document.getElementById('question').innerText = question.question;
+
+        const optionsContainer = document.getElementById('options');
+        optionsContainer.innerHTML = '';
+        question.options.forEach((option, index) => {
+            const optionElement = document.createElement('div');
+            optionElement.classList.add('option');
+            optionElement.innerText = option;
+            optionElement.onclick = () => checkAnswer(index);
+            optionsContainer.appendChild(optionElement);
+        });
+    }
+
+    function checkAnswer(selectedOption) {
+        const question = allQuestions[currentQuestion];
+        if (selectedOption === question.answer) {
+            document.getElementById('result').innerText = "Correct!";
+            document.getElementById('result').style.color = "#ffffff";
+            document.getElementById('result').style.position = "absolute"; // Set position to absolute
+document.getElementById('result').style.top = "50%"; // Position from the top
+document.getElementById('result').style.left = "30%"; // Position from the left
+document.getElementById('result').style.transform = "translate(-50%, -50%)"; // Center the text horizontally and vertically
+            if(score<10)
+            score++;
+            currentQuestion++;
+            if (currentQuestion < 10) {
+                loadQuestion();
+            } else {
+                showScore();
+            }
+        } else {
+            document.getElementById('result').innerText = "Incorrect! Restart the quiz.";
+            document.getElementById('result').style.color = "#ffffff";
+            document.getElementById('result').style.position = "absolute"; 
+document.getElementById('result').style.top = "50%"; 
+document.getElementById('result').style.left = "30%"; 
+document.getElementById('result').style.transform = "translate(-50%, -50%)";
+            document.getElementById('restartButton').style.display = "block";
+        }
+    }
+    function redirectAndUnlock() {
+        window.history.pushState(null, null, window.location.href);
+  window.onpopstate = function () {
+    window.history.go(1);
+  };
+    window.location.href = "geme22.html";
+    localStorage.setItem('unlockedLevel', 'level2');
+}
+
+    function showScore() {
+        document.getElementById('scoreButton').style.display = "none";
+        document.getElementById('restartButton').style.display = "none";
+        document.getElementById('score').style.display = "block";
+        document.getElementById('score').innerText = "Your Score: " + score + "/10";
+        document.getElementById('options').style.display = "none";
+        document.getElementById('question').style.display = "none";
+        
+        if(score==10)
+       {
+        document.getElementById('celebrationPopup').style.display = "block";
+       }
+    }
+
+    function restartQuiz() {
+        currentQuestion = 0;
+        score = 0;
+        document.getElementById('score').style.display = "none";
+        document.getElementById('restartButton').style.display = "none";
+        document.getElementById('result').innerText = "";
+        loadQuestion();
+    }
+
+    // Shuffle questions before starting the quiz
+    allQuestions.sort(() => Math.random() - 0.5);
+
+    // Load the first question when the page loads
+    loadQuestion();
+</script>
+
+</body>
+</html>
